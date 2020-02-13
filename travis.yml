@@ -1,0 +1,29 @@
+language: ruby
+rvm:
+  - 2.6 # or whatever your version is
+branches:
+  only:
+    - master
+    - staging
+script:
+  - bundle exec jekyll build # or whatever your build is
+  - bundle exec rake test # or whatever your tests are
+deploy:
+  - provider: s3
+    access_key_id: $AWS_ID # this references the encrypted $var you gave Travis
+    secret_access_key: $AWS_SECRET_KEY # this references the encrypted $var you gave Travis
+    bucket: # add your staging bucket, e.g., cul-s3-dlst-travis-studio-staging
+    region: us-west-2
+    skip_cleanup: true
+    local_dir: _site
+    on:
+      branch: staging
+  - provider: s3
+    access_key_id: $AWS_ID
+    secret_access_key: $AWS_SECRET_KEY
+    bucket: # add your prod bucket, e.g., cul-s3-dlst-travis-studio-prod
+    region: us-west-2
+    skip_cleanup: true
+    local_dir: _site
+    on:
+      branch: master
